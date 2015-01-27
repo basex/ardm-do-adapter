@@ -2,13 +2,13 @@
 require File.expand_path('../lib/dm-do-adapter/version', __FILE__)
 
 Gem::Specification.new do |gem|
-  gem.name          = "dm-do-adapter"
+  gem.name          = "ardm-do-adapter"
   gem.version       = DataMapper::DoAdapter::VERSION
 
-  gem.authors       = [ "Dan Kubb" ]
-  gem.email         = [ "dan.kubb@gmail.com" ]
-  gem.summary       = "DataObjects Adapter for DataMapper"
-  gem.description   = gem.summary
+  gem.authors       = [ 'Martin Emde', "Dan Kubb" ]
+  gem.email         = [ 'me@martinemde.com', "dan.kubb@gmail.com" ]
+  gem.summary       = 'Ardm fork of dm-do-adapter'
+  gem.description   = "DataObjects Adapter for DataMapper"
   gem.homepage      = "http://datamapper.org"
   gem.license       = 'MIT'
 
@@ -18,8 +18,8 @@ Gem::Specification.new do |gem|
   gem.require_paths = [ "lib" ]
 
   gem.add_runtime_dependency 'data_objects', '~> 0.10.6'
-  gem.add_runtime_dependency 'dm-core',      '~> 1.2'
+  gem.add_runtime_dependency 'ardm-core',    '~> 1.2'
 
-  gem.add_development_dependency 'rake',  '~> 0.9.2'
-  gem.add_development_dependency 'rspec', '~> 1.3.2'
+  gem.add_development_dependency 'rake',  '~> 0.9'
+  gem.add_development_dependency 'rspec', '~> 1.3'
 end
