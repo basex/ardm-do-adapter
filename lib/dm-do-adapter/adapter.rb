@@ -310,6 +310,25 @@ module DataMapper
       # Adapter below.
       module SQL #:nodoc:
         IDENTIFIER_MAX_LENGTH = 128
+        QUESTION_MARK    = '?'.freeze
+        GT_OPERATOR      = '>'.freeze
+        LT_OPERATOR      = '<'.freeze
+        GTE_OPERATOR     = '>='.freeze
+        LTE_OPERATOR     = '<='.freeze
+        IS_OPERATOR      = 'IS'.freeze
+        EQ_OPERATOR      = '='.freeze
+        IN_OPERATOR      = 'IN'.freeze
+        BETWEEN_OPERATOR = 'BETWEEN'.freeze
+        REGEXP_OPERATOR  = '~'.freeze
+        LIKE_OPERATOR    = 'LIKE'.freeze
+        NULL_KEYWORD     = 'NULL'.freeze
+        AND_KEYWORD      = ' AND '.freeze
+        ON_KEYWORD       = 'ON'.freeze
+        COLUMN_SEPARATOR = ', '.freeze
+        SPACE            = ' '.freeze
+        ONE_EQ_ZERO      = '1 = 0'.freeze
+        SINGLE_QUOTE     = /"/.freeze
+        DOUBLE_QUOTE     = '""'.freeze
 
         # @api semipublic
         def property_to_column_name(property, qualify)
@@ -397,9 +416,9 @@ module DataMapper
             statement << default_values_clause
           else
             statement << DataMapper::Ext::String.compress_lines(<<-SQL)
-              (#{properties.map { |property| quote_name(property.field) }.join(', ')})
+              (#{properties.map { |property| quote_name(property.field) }.join(COLUMN_SEPARATOR)})
               VALUES
-              (#{(['?'] * properties.size).join(', ')})
+              (#{([QUESTION_MARK] * properties.size).join(COLUMN_SEPARATOR)})
             SQL
           end
 
@@ -439,7 +458,7 @@ module DataMapper
           end
 
           statement = "UPDATE #{quote_name(model.storage_name(name))}"
-          statement << " SET #{properties.map { |property| "#{quote_name(property.field)} = ?" }.join(', ')}"
+          statement << " SET #{properties.map { |property| "#{quote_name(property.field)} = ?" }.join(COLUMN_SEPARATOR)}"
           statement << " WHERE #{conditions_statement}" unless DataMapper::Ext.blank?(conditions_statement)
 
           return statement, bind_values
@@ -474,7 +493,7 @@ module DataMapper
         #
         # @api private
         def columns_statement(properties, qualify)
-          properties.map { |property| property_to_column_name(property, qualify) }.join(', ')
+          properties.map { |property| property_to_column_name(property, qualify) }.join(COLUMN_SEPARATOR)
         end
 
         # Constructs joins clause
@@ -505,7 +524,7 @@ module DataMapper
               seen[source_alias] = 0
             end
 
-            statements << 'ON'
+            statements << ON_KEYWORD
 
             add_join_conditions(relationship, target_alias, source_alias, statements)
             add_extra_join_conditions(relationship, target_alias, statements, join_bind_values)
@@ -514,13 +533,13 @@ module DataMapper
           # prepend the join bind values to the statement bind values
           bind_values.unshift(*join_bind_values)
 
-          statements.join(' ')
+          statements.join(SPACE)
         end
 
         def add_join_conditions(relationship, target_alias, source_alias, statements)
           statements << relationship.target_key.zip(relationship.source_key).map do |target_property, source_property|
             "#{property_to_column_name(target_property, target_alias)} = #{property_to_column_name(source_property, source_alias)}"
-          end.join(' AND ')
+          end.join(AND_KEYWORD)
         end
 
         def add_extra_join_conditions(relationship, target_alias, statements, bind_values)
@@ -576,7 +595,7 @@ module DataMapper
           statement = if target_key.size == 1
             property_to_column_name(target_key.first, qualify)
           else
-            "(#{target_key.map { |property| property_to_column_name(property, qualify) }.join(', ')})"
+            "(#{target_key.map { |property| property_to_column_name(property, qualify) }.join(COLUMN_SEPARATOR)})"
           end
 
           statement << " IN (#{select_statement})"
@@ -593,7 +612,7 @@ module DataMapper
           if conditions.valid?
             conditions_statement(conditions, qualify)
           else
-            [ '1 = 0', [] ]
+            [ ONE_EQ_ZERO, [] ]
           end
         end
 
@@ -631,7 +650,7 @@ module DataMapper
             statement
           end
 
-          statements.join(', ')
+          statements.join(COLUMN_SEPARATOR)
         end
 
         # @api private
@@ -700,10 +719,10 @@ module DataMapper
 
           # if operator return value contains ? then it means that it is function call
           # and it contains placeholder (%s) for property name as well (used in Oracle adapter for regexp operator)
-          if operator.include?('?')
+          if operator.include?(QUESTION_MARK)
             return operator % column_name, [ value ]
           else
-            return "#{column_name} #{operator} #{value.nil? ? 'NULL' : '?'}", [ value ].compact
+            return "#{column_name} #{operator} #{value.nil? ? NULL_KEYWORD : QUESTION_MARK}", [ value ].compact
           end
         end
 
@@ -716,39 +735,39 @@ module DataMapper
             when :in     then include_operator(subject, value)
             when :regexp then regexp_operator(value)
             when :like   then like_operator(value)
-            when :gt     then '>'
-            when :lt     then '<'
-            when :gte    then '>='
-            when :lte    then '<='
+            when :gt     then GT_OPERATOR
+            when :lt     then LT_OPERATOR
+            when :gte    then GTE_OPERATOR
+            when :lte    then LTE_OPERATOR
           end
         end
 
         # @api private
         def equality_operator(property, operand)
-          operand.nil? ? 'IS' : '='
+          operand.nil? ? IS_OPERATOR : EQ_OPERATOR
         end
 
         # @api private
         def include_operator(property, operand)
           case operand
-            when Array then 'IN'
-            when Range then 'BETWEEN'
+            when Array then IN_OPERATOR
+            when Range then BETWEEN_OPERATOR
           end
         end
 
         # @api private
         def regexp_operator(operand)
-          '~'
+          REGEXP_OPERATOR
         end
 
         # @api private
         def like_operator(operand)
-          'LIKE'
+          LIKE_OPERATOR
         end
 
         # @api private
         def quote_name(name)
-          "\"#{name[0, self.class::IDENTIFIER_MAX_LENGTH].gsub('"', '""')}\""
+          "\"#{name[0, self.class::IDENTIFIER_MAX_LENGTH].gsub(SINGLE_QUOTE,DOUBLE_QUOTE)}\""
         end
 
       end
