@@ -313,16 +313,17 @@ module DataMapper
 
         # @api semipublic
         def property_to_column_name(property, qualify)
-          column_name = ''
+          column_name = quote_name(property.field)
 
           case qualify
-            when true
-              column_name << "#{quote_name(property.model.storage_name(name))}."
-            when String
-              column_name << "#{quote_name(qualify)}."
+          when true
+            "#{quote_name(property.model.storage_name(name))}.#{column_name}"
+          when String
+            "#{quote_name(qualify)}.#{column_name}"
+          else
+            column_name
           end
 
-          column_name << quote_name(property.field)
         end
 
         private
