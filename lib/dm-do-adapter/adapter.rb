@@ -598,7 +598,7 @@ module DataMapper
             "(#{target_key.map { |property| property_to_column_name(property, qualify) }.join(COLUMN_SEPARATOR)})"
           end
 
-          statement << " IN (#{select_statement})"
+          statement = "#{statement} IN (#{select_statement})"
 
           return statement, bind_values
         end
@@ -646,7 +646,7 @@ module DataMapper
         def order_statement(order, qualify)
           statements = order.map do |direction|
             statement = property_to_column_name(direction.target, qualify)
-            statement << ' DESC' if direction.operator == :desc
+            statement = "#{statement} DESC" if direction.operator == :desc
             statement
           end
 
