@@ -17,8 +17,7 @@ Gem::Specification.new do |gem|
   gem.extra_rdoc_files = %w[LICENSE README.md]
   gem.require_paths = [ "lib" ]
 
-  gem.add_runtime_dependency 'data_objects', '~> 0.10.6'
-  gem.add_runtime_dependency 'ardm-core',    '~> 1.2'
+  gem.add_runtime_dependency 'data_objects', '~> 0.10.16'
 
   gem.add_development_dependency 'rake',  '~> 0.9'
   gem.add_development_dependency 'rspec', '~> 1.3'
