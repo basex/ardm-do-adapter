@@ -16,7 +16,7 @@ Gem::Specification.new do |gem|
   gem.require_paths = [ "lib" ]
   gem.version       = DataMapper::DoAdapter::VERSION
 
-  gem.add_runtime_dependency(%q<data_objects>, ["~> 0.10.6"])
+  gem.add_runtime_dependency(%q<data_objects>, ["~> 0.10.16"])
   gem.add_runtime_dependency(%q<dm-core>, ["~> 1.3.0.beta"])
 
   gem.add_development_dependency(%q<rake>, ["~> 0.9.2"])
